@@ -74,7 +74,38 @@ let MutationAdd = {
       type: new GraphQLNonNull(GraphQLString)
     },
     age: {
-      age: 'user\'s name',
+      age: 'user\'s age',
+      type: GraphQLInt
+    }
+  },
+  resolve: (root, args) => {
+    let newUser = new User({
+      name: args.name,
+      age: args.age
+    })
+    newUser.id = newUser._id
+    return new Promise((resolve, reject) => {
+      newUser.save((err) => {
+        if(err){
+          reject(err)
+        }else{
+          resolve(newUser)
+        }
+      })
+    })
+  }
+}
+
+let MutationEdit = {
+  type: UserType,
+  description: "Edit a user",
+  args: {
+    name: {
+      name: 'Edit user\'s name',
+      type: new GraphQLNonNull(GraphQLString)
+    },
+    age: {
+      age: 'Edit user\'s age',
       type: GraphQLInt
     }
   },
@@ -99,7 +130,8 @@ let MutationAdd = {
 let MutationType = new GraphQLObjectType({
   name: 'Mutation',
   fields: {
-    add: MutationAdd
+    add: MutationAdd,
+    edit: MutationEdit
   }
 })
 
