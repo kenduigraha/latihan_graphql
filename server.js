@@ -7,7 +7,11 @@ import logger from 'morgan'
 const app = express()
 
 app.get('/', (req, res) => {
-
+  let query = '{users {name age}}'
+  graphql(schema, query)
+    .then(result => {
+      res.json(result)
+    })
 })
 
 app.use(logger())

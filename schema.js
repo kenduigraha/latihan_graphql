@@ -3,7 +3,7 @@ import {
   GraphQLObjectType,
   GraphQLID,
   GraphQLSchema,
-  GraphQLNoNull,
+  GraphQLNonNull,
   GraphQLList,
   GraphQLString,
   GraphQLInt
@@ -64,3 +64,56 @@ let QueryType = new GraphQLObjectType({
     }
   })
 })
+
+let MutationAdd = {
+  type: UserType,
+  description: "Add a user",
+  args: {
+    name: {
+      name: 'user\'s name',
+      type: new GraphQLNonNull(GraphQLString)
+    },
+    age: {
+      age: 'user\'s name',
+      type: GraphQLInt
+    }
+  },
+  resolve: (root, args) => {
+    let newUser = new User({
+      name: args.name,
+      age: args.age
+    })
+    newUser.id = newUser._id
+    return new Promise((resolve, reject) => {
+      newUser.save((err) => {
+        if(err){
+          reject(err)
+        }else{
+          resolve(newUser)
+        }
+      })
+    })
+  }
+}
+
+let MutationType = new GraphQLObjectType({
+  name: 'Mutation',
+  fields: {
+    add: MutationAdd
+  }
+})
+
+let schema = new GraphQLSchema({
+  query: QueryType,
+  mutation: MutationType
+})
+
+export default schema
+/*
+mutation{add(name:"ken", age:22) {
+  id name age
+}}
+query{users {
+  id name age
+}}
+*/
